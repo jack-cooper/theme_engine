@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE theme SET activated = current_date WHERE title = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "5f3c7a4a20db812e4ac97de0790af68209feadb4eeb7e7e633993e8c0b722a13"
+}
