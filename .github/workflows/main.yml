@@ -24,7 +24,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --verbose --target x86_64-unknown-linux-musl
+          args: --release --target x86_64-unknown-linux-musl
           use-cross: true
 
       - name: Prepare release
@@ -32,11 +32,13 @@ jobs:
           cd target/x86_64-unknown-linux-musl/release
           strip theme_engine
           chmod +x theme_engine
+          tar -c theme_engine ../../../theme.db | gzip > theme_engine.tar.gz
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
-          files: |
-            theme.db
-            target/x86_64-unknown-linux-musl/release/theme_engine
-          token: ${{ secrets.TOKEN }}
+          asset_name: theme_engine-${{ github.event.release.tag-name }}-linux-x86_64.tar.gz
+          asset_path: target/x86_64-unknown-linux-musl/release/theme_engine.tar.gz
+          upload_url: ${{ github.event.release.upload_url }}
