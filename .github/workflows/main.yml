@@ -12,14 +12,31 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build
-        run: rustup target add x86_64-unknown-linux-musl && cargo build --release --verbose
+      - uses: actions/checkout@v4
+
+      - name: Install rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+
+      - name: Build binary
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --verbose --target x86_64-unknown-linux-musl
+          use-cross: true
+
+      - name: Prepare release
+        run: |
+          cd target/x86_64-unknown-linux-musl/release
+          strip theme_engine
+          chmod +x theme_engine
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             theme.db
-            target/release/theme_engine
+            target/x86_64-unknown-linux-musl/release/theme_engine
           token: ${{ secrets.TOKEN }}
